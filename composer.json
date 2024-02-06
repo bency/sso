@@ -1,9 +1,9 @@
 {
-    "name": "casperlaitw/sso",
+    "name": "bency/sso",
     "description": "Simple Single Sign-On",
     "keywords": ["sso", "auth"],
     "license": "MIT",
-    "homepage": "https://github.com/CasperLaiTW/sso",
+    "homepage": "https://github.com/bency/sso",
     "authors": [
         {
             "name": "Casper Lai",

@@ -32,7 +32,7 @@ class Cookies implements \ArrayAccess
      * @param string $domain
      * @param bool   $secure
      */
-    public function __construct(int $ttl = 3600, string $path = '', string $domain = '', bool $secure = false)
+    public function __construct(int $ttl = 3600, string $path = '/', string $domain = '', bool $secure = false)
     {
         $this->ttl = $ttl;
         $this->path = $path;
@@ -43,9 +43,20 @@ class Cookies implements \ArrayAccess
     /**
      * @inheritDoc
      */
-    public function offsetSet($name, $value)
+    public function offsetSet($name, $value): void
     {
-        $success = setcookie($name, $value, time() + $this->ttl, $this->path, $this->domain, $this->secure, true);
+        $success = setcookie(
+            $name,
+            $value,
+            [
+                'expires' => time() + $this->ttl,
+                'path' => $this->path,
+                'domain' => $this->domain,
+                'secure' => $this->secure,
+                'httponly' => true,
+                'samesite' => 'Lax'
+            ]
+        );
 
         if (!$success) {
             throw new \RuntimeException("Failed to set cookie '$name'");
@@ -59,7 +70,18 @@ class Cookies implements \ArrayAccess
      */
     public function offsetUnset($name): void
     {
-        setcookie($name, '', 1, $this->path, $this->domain, $this->secure, true);
+        setcookie(
+            $name,
+            '',
+            [
+                'expires' => time() - 3600,
+                'path' => $this->path,
+                'domain' => $this->domain,
+                'secure' => $this->secure,
+                'httponly' => true,
+                'samesite' => 'Lax'
+            ]
+        );
         unset($_COOKIE[$name]);
     }
 
@@ -74,7 +96,7 @@ class Cookies implements \ArrayAccess
     /**
      * @inheritDoc
      */
-    public function offsetExists($name)
+    public function offsetExists($name): bool
     {
         return isset($_COOKIE[$name]);
     }
